@@ -28,6 +28,13 @@ const defaultParams: ShaderParams = {
   refr_index: 0.9,
 };
 
+const POLY_TYPES = [
+  { value: 2, name: "Dihedral (2)", description: "Dihedral symmetry. Forms prisms and bipyramids." },
+  { value: 3, name: "Tetrahedral (3)", description: "Tetrahedral symmetry. Forms tetrahedrons." },
+  { value: 4, name: "Octahedral (4)", description: "Octahedral symmetry. Forms cubes and octahedrons." },
+  { value: 5, name: "Icosahedral (5)", description: "Icosahedral symmetry. Forms icosahedrons and dodecahedrons." },
+];
+
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [params, setParams] = useState<ShaderParams>(() => {
@@ -313,30 +320,6 @@ export default function App() {
               onChange={(v) => handleParamChange('roll', v)} 
             />
             <SliderControl 
-              label="Poly U" 
-              value={params.poly_U} 
-              min={0} max={5} step={0.1} 
-              onChange={(v) => handleParamChange('poly_U', v)} 
-            />
-            <SliderControl 
-              label="Poly V" 
-              value={params.poly_V} 
-              min={0} max={5} step={0.1} 
-              onChange={(v) => handleParamChange('poly_V', v)} 
-            />
-            <SliderControl 
-              label="Poly W" 
-              value={params.poly_W} 
-              min={0} max={5} step={0.1} 
-              onChange={(v) => handleParamChange('poly_W', v)} 
-            />
-            <SliderControl 
-              label="Poly Type" 
-              value={params.poly_type} 
-              min={2} max={5} step={1} 
-              onChange={(v) => handleParamChange('poly_type', v)} 
-            />
-            <SliderControl 
               label="Poly Zoom" 
               value={params.poly_zoom} 
               min={0.1} max={5} step={0.1} 
@@ -353,6 +336,43 @@ export default function App() {
               value={params.refr_index} 
               min={0.1} max={2.0} step={0.01} 
               onChange={(v) => handleParamChange('refr_index', v)} 
+            />
+          </div>
+        </div>
+
+        {/* Polyhedron Panel */}
+        <div className="bg-black/60 backdrop-blur-md border border-white/10 p-6 rounded-2xl w-80 shadow-2xl mt-4">
+          <h3 className="text-sm font-medium text-gray-300 mb-3">Polyhedron</h3>
+          <select
+            value={params.poly_type}
+            onChange={(e) => handleParamChange('poly_type', parseInt(e.target.value, 10))}
+            className="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none cursor-pointer"
+          >
+            {POLY_TYPES.map(pt => (
+              <option key={pt.value} value={pt.value}>{pt.name}</option>
+            ))}
+          </select>
+          <p className="mt-3 mb-5 text-xs text-gray-400 leading-relaxed">
+            {POLY_TYPES.find(pt => pt.value === params.poly_type)?.description}
+          </p>
+          <div className="space-y-5">
+            <SliderControl 
+              label="Poly U" 
+              value={params.poly_U} 
+              min={0} max={5} step={0.1} 
+              onChange={(v) => handleParamChange('poly_U', v)} 
+            />
+            <SliderControl 
+              label="Poly V" 
+              value={params.poly_V} 
+              min={0} max={5} step={0.1} 
+              onChange={(v) => handleParamChange('poly_V', v)} 
+            />
+            <SliderControl 
+              label="Poly W" 
+              value={params.poly_W} 
+              min={0} max={5} step={0.1} 
+              onChange={(v) => handleParamChange('poly_W', v)} 
             />
           </div>
         </div>
