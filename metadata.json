@@ -1,5 +1,5 @@
 {
-  "name": "Platonic Solids Shader",
+  "name": "Platonic Shapes Rotator",
   "description": "A WebGL shader rendering platonic solids with inner mirrors, featuring a UI to tune parameters.",
   "requestFramePermissions": []
 }

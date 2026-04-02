@@ -30,13 +30,24 @@ const defaultParams: ShaderParams = {
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [params, setParams] = useState<ShaderParams>(defaultParams);
+  const [params, setParams] = useState<ShaderParams>(() => {
+    const saved = localStorage.getItem('platonic-shader-params');
+    if (saved) {
+      try {
+        return { ...defaultParams, ...JSON.parse(saved) };
+      } catch (e) {
+        console.error("Failed to parse saved params", e);
+      }
+    }
+    return defaultParams;
+  });
   const [showUI, setShowUI] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const paramsRef = useRef(params);
 
   useEffect(() => {
     paramsRef.current = params;
+    localStorage.setItem('platonic-shader-params', JSON.stringify(params));
   }, [params]);
 
   useEffect(() => {
@@ -198,6 +209,12 @@ export default function App() {
           setParams(prev => ({ ...prev, poly_V: mappedValue }));
         } else if (data1 === 2) {
           setParams(prev => ({ ...prev, poly_W: mappedValue }));
+        } else if (data1 === 5) {
+          setParams(prev => ({ ...prev, poly_zoom: 0.1 + (data2 / 127) * 4.9 }));
+        } else if (data1 === 6) {
+          setParams(prev => ({ ...prev, inner_sphere: (data2 / 127) * 2.0 }));
+        } else if (data1 === 7) {
+          setParams(prev => ({ ...prev, refr_index: 0.1 + (data2 / 127) * 1.9 }));
         } else if (data1 === 16) {
           setParams(prev => ({ ...prev, yaw: ((data2 / 127) * 2 - 1) * Math.PI }));
         } else if (data1 === 17) {
