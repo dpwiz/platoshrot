@@ -11,7 +11,9 @@ precision highp float;
 uniform vec3 iResolution;
 uniform float iTime;
 
-uniform float rotation_speed;
+uniform float yaw;
+uniform float pitch;
+uniform float roll;
 uniform float poly_U;
 uniform float poly_V;
 uniform float poly_W;
@@ -67,14 +69,17 @@ vec3  poly_pca;
 mat3 g_rot;
 vec2 g_gd;
 
-mat3 rot(vec3 d, vec3 z) {
-  vec3  v = cross( z, d );
-  float c = dot( z, d );
-  float k = 1.0/(1.0+c);
-
-  return mat3( v.x*v.x*k + c,     v.y*v.x*k - v.z,    v.z*v.x*k + v.y,
-               v.x*v.y*k + v.z,   v.y*v.y*k + c,      v.z*v.y*k - v.x,
-               v.x*v.z*k - v.y,   v.y*v.z*k + v.x,    v.z*v.z*k + c    );
+mat3 rotX(float a) {
+  float s = sin(a), c = cos(a);
+  return mat3(1.0, 0.0, 0.0, 0.0, c, s, 0.0, -s, c);
+}
+mat3 rotY(float a) {
+  float s = sin(a), c = cos(a);
+  return mat3(c, 0.0, -s, 0.0, 1.0, 0.0, s, 0.0, c);
+}
+mat3 rotZ(float a) {
+  float s = sin(a), c = cos(a);
+  return mat3(c, s, 0.0, -s, c, 0.0, 0.0, 0.0, 1.0);
 }
 
 vec3 aces_approx(vec3 v) {
@@ -350,11 +355,7 @@ void main() {
   poly_pbc      = normalize(poly_pbc_);
   poly_pca      = normalize(poly_pca_);
 
-  float a = TIME*rotation_speed;
-  vec3 r0 = vec3(1.0, sin(vec2(sqrt(0.5), 1.0)*a));
-  vec3 r1 = vec3(cos(vec2(sqrt(0.5), 1.0)*0.913*a), 1.0);
-  mat3 r = rot(normalize(r0), normalize(r1));
-  g_rot = r;
+  g_rot = rotX(pitch) * rotY(yaw) * rotZ(roll);
 
   vec3 col = effect(p, pp);
   

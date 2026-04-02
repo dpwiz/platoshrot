@@ -3,7 +3,9 @@ import { Settings2, Maximize2, Minimize2, RefreshCw } from 'lucide-react';
 import { vertexShaderSource, fragmentShaderSource } from './Shader';
 
 interface ShaderParams {
-  rotation_speed: number;
+  yaw: number;
+  pitch: number;
+  roll: number;
   poly_U: number;
   poly_V: number;
   poly_W: number;
@@ -14,7 +16,9 @@ interface ShaderParams {
 }
 
 const defaultParams: ShaderParams = {
-  rotation_speed: 0.25,
+  yaw: 0.0,
+  pitch: 0.0,
+  roll: 0.0,
   poly_U: 1.0,
   poly_V: 0.5,
   poly_W: 1.0,
@@ -98,7 +102,9 @@ export default function App() {
     const locations = {
       iResolution: gl.getUniformLocation(program, 'iResolution'),
       iTime: gl.getUniformLocation(program, 'iTime'),
-      rotation_speed: gl.getUniformLocation(program, 'rotation_speed'),
+      yaw: gl.getUniformLocation(program, 'yaw'),
+      pitch: gl.getUniformLocation(program, 'pitch'),
+      roll: gl.getUniformLocation(program, 'roll'),
       poly_U: gl.getUniformLocation(program, 'poly_U'),
       poly_V: gl.getUniformLocation(program, 'poly_V'),
       poly_W: gl.getUniformLocation(program, 'poly_W'),
@@ -128,7 +134,9 @@ export default function App() {
       gl.uniform1f(locations.iTime, currentTime);
       
       const p = paramsRef.current;
-      gl.uniform1f(locations.rotation_speed, p.rotation_speed);
+      gl.uniform1f(locations.yaw, p.yaw);
+      gl.uniform1f(locations.pitch, p.pitch);
+      gl.uniform1f(locations.roll, p.roll);
       gl.uniform1f(locations.poly_U, p.poly_U);
       gl.uniform1f(locations.poly_V, p.poly_V);
       gl.uniform1f(locations.poly_W, p.poly_W);
@@ -190,6 +198,12 @@ export default function App() {
           setParams(prev => ({ ...prev, poly_V: mappedValue }));
         } else if (data1 === 2) {
           setParams(prev => ({ ...prev, poly_W: mappedValue }));
+        } else if (data1 === 16) {
+          setParams(prev => ({ ...prev, yaw: ((data2 / 127) * 2 - 1) * Math.PI }));
+        } else if (data1 === 17) {
+          setParams(prev => ({ ...prev, pitch: ((data2 / 127) * 2 - 1) * Math.PI }));
+        } else if (data1 === 18) {
+          setParams(prev => ({ ...prev, roll: ((data2 / 127) * 2 - 1) * Math.PI }));
         }
       }
     };
@@ -264,10 +278,22 @@ export default function App() {
 
           <div className="space-y-5">
             <SliderControl 
-              label="Rotation Speed" 
-              value={params.rotation_speed} 
-              min={0} max={2} step={0.01} 
-              onChange={(v) => handleParamChange('rotation_speed', v)} 
+              label="Yaw" 
+              value={params.yaw} 
+              min={-Math.PI} max={Math.PI} step={0.01} 
+              onChange={(v) => handleParamChange('yaw', v)} 
+            />
+            <SliderControl 
+              label="Pitch" 
+              value={params.pitch} 
+              min={-Math.PI} max={Math.PI} step={0.01} 
+              onChange={(v) => handleParamChange('pitch', v)} 
+            />
+            <SliderControl 
+              label="Roll" 
+              value={params.roll} 
+              min={-Math.PI} max={Math.PI} step={0.01} 
+              onChange={(v) => handleParamChange('roll', v)} 
             />
             <SliderControl 
               label="Poly U" 
